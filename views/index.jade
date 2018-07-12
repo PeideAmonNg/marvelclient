@@ -1,0 +1,226 @@
+extends layout
+
+block content
+
+	h1= title
+	// each c in d
+	// 	div
+	// 		img(src=c.thumbnail.path + "." + c.thumbnail.extension, style="width:300px;height:300px;")
+	// 		div= c.name
+
+	div(id="root")
+
+	script(src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin)
+	script(src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin)
+	script(src="https://unpkg.com/babel-standalone@6/babel.min.js")
+	script(src="https://unpkg.com/axios/dist/axios.min.js")
+
+	script(type="text/babel").
+		console.log("hi");
+		ReactDOM.render(
+		<p>Marvel Characters</p>,
+			document.getElementById('root')
+		);
+
+		class NameForm extends React.Component {
+			constructor(props) {
+				super(props);
+				this.state = {value: '', res: [], status: '', allChars: [], currentChar: {}, currentIndex: 0, count: {}, characterCount: 0};
+
+				this.handleChange = this.handleChange.bind(this);
+				this.handleSubmit = this.handleSubmit.bind(this);
+				this.previous = this.previous.bind(this);
+				this.next = this.next.bind(this);
+				this.first = this.first.bind(this);
+				this.last = this.last.bind(this);
+				//- this.getRandomChar = this.getRandomChar(this);
+				this.initialiseCount = this.initialiseCount.bind(this);
+				
+				;
+				Promise.all([this.initialiseCount()]).then(() => {
+					this.getRandomChar();					
+				});
+				
+			}
+
+			initialiseCount(){
+				return new Promise((resolve, reject) => {
+					axios.get('/characterCount').then(res => {
+						console.log(res.data);
+						var count = res.data;
+						var characterCount = 0;
+
+						for (var key in count) {
+							if (count.hasOwnProperty(key)) {
+							console.log(key, count[key]);
+							characterCount += count[key];
+							}
+						}
+
+						this.setState({count: count, characterCount: characterCount});
+						resolve('cool');
+					});
+				});
+			}
+
+			getRandomChar() {
+				var randomChar = Math.floor(Math.random() * this.state.characterCount) + 1;
+
+				var selectedChar = '';
+
+				// count.forEach(function(value, key, map) {
+				//   if(!selectedChar){
+				//     if(randomChar <= value){
+				//       selectedChar = key;          
+				//     }else{
+				//       randomChar -= value;
+				//     }
+				//   }
+				// });      
+
+				for (var key in this.state.count) {
+					if (this.state.count.hasOwnProperty(key)) {
+						if(!selectedChar){
+							if(randomChar <= this.state.count[key]){
+								selectedChar = key;          
+							}else{
+								randomChar -= this.state.count[key];
+							}
+						}
+					}
+				}
+
+				var offset = Math.floor(Math.random() * this.state.count[selectedChar]);
+
+				axios.get("https://gateway.marvel.com:443/v1/public/characters?apikey=78a5f1faa9fa3362e2c83c492ca54dc0&nameStartsWith=" + selectedChar + '&limit=1&offset=' + offset).then(r => {        
+					this.setState({allChars: this.state.allChars.concat([r.data.data.results[0]]), currentChar: r.data.data.results[0], currentIndex: this.state.allChars.length+1});
+					console.log(this.state.currentChar);
+					console.log(this.state.allChars);
+				});
+			}
+
+			handleChange(event) {
+				this.setState({value: event.target.value});
+			}
+
+			handleSubmit(event) {
+				console.log("clicked");
+				console.log(event);
+				this.getRandomChar();
+				event.preventDefault();
+			}
+
+			previous(event){
+				if(this.state.allChars.length > 1){
+					for(var i = 0; i < this.state.allChars.length - 1; i++){
+						if(this.state.allChars[i + 1].id == this.state.currentChar.id){
+							this.setState({currentChar: this.state.allChars[i], currentIndex: this.state.currentIndex-1});
+						}
+					}
+				}
+				event.preventDefault();
+			}
+
+			next(event){
+				if(this.state.allChars.length > 1){
+					for(var i = 0; i < this.state.allChars.length - 1; i++){
+						if(this.state.allChars[i].id == this.state.currentChar.id){
+							this.setState({currentChar: this.state.allChars[i + 1], currentIndex: this.state.currentIndex+1});
+						}
+					}
+				}
+				event.preventDefault();
+			}
+
+			first(event){
+				this.setState({currentChar: this.state.allChars[0], currentIndex: 1})
+				event.preventDefault();
+			}
+
+			last(event){
+				this.setState({currentChar: this.state.allChars[this.state.allChars.length - 1], currentIndex: this.state.allChars.length})
+				event.preventDefault();
+			}
+
+			render() {
+
+				return (
+					<div>
+						{((this.state.currentIndex > 1) && <a href="#" onClick={this.first}>first </a>) || "first "}
+						{((this.state.currentIndex > 1) && <a href="#" onClick={this.previous}>previous </a>) || "previous "}
+						{((this.state.allChars.length != this.state.currentIndex) && <a href="#" onClick={this.next}>next </a>) || "next "}
+						{((this.state.currentIndex < this.state.allChars.length) && <a href="#" onClick={this.last}>last </a>) || "last "}
+						<span>({this.state.currentIndex}/{this.state.allChars.length}) </span>
+						<button class="button" onClick={this.handleSubmit}>Random</button>
+						<div id="wrapper">						
+							<div id="profileDiv">
+								<div id="imageDiv">
+									<img src={(this.state.currentChar.thumbnail) && (this.state.currentChar.thumbnail.path + "." + this.state.currentChar.thumbnail.extension)} style={{width: "100%", height: "auto"}} />
+									<p style={{"font-weight": "bold"}}>{this.state.currentChar.name}</p>
+									<p>
+										{this.state.currentChar.description && this.state.currentChar.description
+										}
+									</p>
+								</div>
+								<div>
+									{this.state.currentChar.urls && this.state.currentChar.urls.map((i) =>
+										<a class="url" href={i.url} target="_blank" style={{"margin-right": "10px"}}>{i.type}</a>
+									)}
+								</div>
+							</div>
+							<div id="rightDiv">
+								<div>
+									<h3>Appearing in</h3>
+									<h4>Comics</h4>
+									<div>
+										{this.state.currentChar.comics && this.state.currentChar.comics.returned > 0 ?
+											this.state.currentChar.comics.items.map((i) =>
+											<div class="item" style={{"margin-right": "10px"}}>{i.name}</div>) : 
+											"none"
+										}
+									</div>
+
+									
+									<h4>Series</h4>
+									<div>
+										{this.state.currentChar.series && this.state.currentChar.series.returned > 0 ?
+											this.state.currentChar.series.items.map((i) =>
+											<span class="item" style={{"margin-right": "10px"}}>{i.name}</span>) : 
+											"none"
+										}
+									</div>
+
+									
+									<h4>Stories</h4>
+									<div>
+										{this.state.currentChar.stories && this.state.currentChar.stories.returned > 0 ?
+											this.state.currentChar.stories.items.map((i) =>
+											<span class="item" style={{"margin-right": "10px"}}>{i.name}</span>) : 
+											"none"
+										}
+									</div>
+
+									
+									<h4>Events</h4>
+									<div>
+										{this.state.currentChar.events && this.state.currentChar.events.returned > 0 ?
+											this.state.currentChar.events.items.map((i) =>
+											<span class="item" style={{"margin-right": "10px"}}>{i.name}</span>) : 
+											"none"
+										}
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				);
+			}
+		}
+
+		ReactDOM.render(
+			<NameForm></NameForm>,
+			document.getElementById("root")
+		);
+
+		

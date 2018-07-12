@@ -31,6 +31,7 @@ app.use('/', routes);
 app.use('/users', users);
 
 var common = require('./common')
+console.log("common " + common);
 var config = common.config();
 
 var mongoPath = config.db;

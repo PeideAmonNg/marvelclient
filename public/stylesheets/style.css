@@ -1,0 +1,90 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.item{
+	background-color: #eb2328;
+	color: white;
+	padding: 5px;
+	font-weight: bold;
+	display: inline-block;
+	margin-bottom: 5px;
+}
+
+.url{
+	background-color: #0066CC;
+	color: white;
+	padding: 5px;
+	font-weight: bold;
+	display: inline-block;
+	margin-bottom: 5px;
+	text-decoration: none;
+}
+#wrapper{
+	display: table;
+	margin-top: 20px;
+}
+
+.button{
+    background-color: #eb2328; /* red */
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+@media screen and (max-width: 767px) {
+  #profileDiv{
+  	height:auto;
+  	display: table-row;
+  	width: 100%;
+	padding-bottom: 10px;
+  }
+
+  #rightDiv {
+  	float: left;
+  	display: table-row;
+  }
+
+  #profileDiv:after{
+	height: 1px;
+	display: block;
+	width: 100%;
+	background: lightgrey;
+	border-right: 1px white;
+	content: '';
+	margin-top: 20px;
+	}
+}
+
+
+@media screen and (min-width: 767px) {
+  #profileDiv{
+	 display: table-cell;
+	 vertical-align:top;
+	 width: 300px;
+	 overflow: hidden;
+	 padding-right: 30px;
+  }
+
+  #imageDiv{
+	 height: 100%;
+	 width: 100%;
+
+  }
+
+  #rightDiv {
+	display: table-cell;
+	vertical-align:top;
+  }
+}
+
+#wrapper{
+	display: table;
+}

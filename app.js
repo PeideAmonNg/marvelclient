@@ -42,15 +42,16 @@ var dbName = config.name;
 
 
 // console.log("mongoPath " + mongoPath);
+console.log(process.env.NODE_ENV);
 
 app.get("/characterCount", function (req, res) {
   console.log("mongoPath " + mongoPath);
   console.log("dbName "+ dbName);
-  MongoClient.connect(mongoPath, function (err, db) {   
+  MongoClient.connect(mongoPath + dbName, function (err, db) {   
     if(err) throw err;
 
     // var dbo = db.db("marvelclient");
-      var dbo = db.db(dbName);
+      var dbo = db.db();
     dbo.collection('characterCount').findOne({}, function(err1, r1) {
       console.log(r1);
       if(r1){
@@ -120,14 +121,14 @@ function getCharacters(char, timestamp, hash){
 
 var insert = function(date){
   // Connect to the db
-  MongoClient.connect("mongoPath", function (err, db) {   
+  MongoClient.connect(mongoPath + dbName, function (err, db) {   
     if(err) throw err;
 
     var timestamp = Date.now();
     var hash = md5(timestamp + privateKey + publicKey);
 
     // var dbo = db.db("marvelclient");
-      var dbo = db.db(dbName);
+      var dbo = db.db();
 
     console.log('making request');
 

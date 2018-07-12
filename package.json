@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "startprod": "NODE_ENV=production node ../bin/www"
+    "startprod": "NODE_ENV=production node ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.13.2",

@@ -35,6 +35,8 @@ var config = common.config();
 
 var mongoPath = config.db;
 
+console.log("mongoPath " + mongoPath);
+
 app.get("/characterCount", function (req, res) {
   MongoClient.connect(mongoPath, function (err, db) {   
     if(err) throw err;

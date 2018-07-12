@@ -44,6 +44,8 @@ var dbName = config.name;
 // console.log("mongoPath " + mongoPath);
 
 app.get("/characterCount", function (req, res) {
+  console.log("mongoPath " + mongoPath);
+  console.log("dbName "+ dbName);
   MongoClient.connect(mongoPath, function (err, db) {   
     if(err) throw err;
 

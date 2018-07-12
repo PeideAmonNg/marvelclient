@@ -2,9 +2,14 @@ var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
 
+var common = require('../common')
+var config = common.config();
+
+var mongoPath = config.db;
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	MongoClient.connect("mongodb://localhost:27017/", function (err, db) {   
+	MongoClient.connect(mongoPath, function (err, db) {   
 	    if(err) throw err;
 	    var dbo = db.db("marvelclient");
 	    dbo.collection('inserts').find({}).toArray(function(err, docs) {

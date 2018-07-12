@@ -34,21 +34,35 @@ var common = require('./common')
 var config = common.config();
 
 var mongoPath = config.db;
+var dbName = config.name;
+// var mongoPath = 'mongodb://admin1:admin1spassword@ds133601.mlab.com:33601/heroku_cf7f9xz3';
+// var mongoPath = 'mongodb://localhost:27017/';
+// var mongoPath = 'mongodb://admin1:admin1spassword@ds133601.mlab.com:33601/heroku_cf7f9xz3';
 
-console.log("mongoPath " + mongoPath);
+
+// console.log("mongoPath " + mongoPath);
 
 app.get("/characterCount", function (req, res) {
   MongoClient.connect(mongoPath, function (err, db) {   
     if(err) throw err;
 
-    var dbo = db.db("marvelclient");
+    // var dbo = db.db("marvelclient");
+      var dbo = db.db(dbName);
     dbo.collection('characterCount').findOne({}, function(err1, r1) {
-      delete r1._id;
       console.log(r1);
-      res.setHeader('Content-Type', 'application/json');
+      if(r1){
+        delete r1._id;
+        console.log(r1);
+        console.log("sending " + r1);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(r1));
 
+      }else{
+        console.log("r1 is null");
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({}));
+      }
 
-      res.send(JSON.stringify(r1));
     });
   });
 });
@@ -109,7 +123,8 @@ var insert = function(date){
     var timestamp = Date.now();
     var hash = md5(timestamp + privateKey + publicKey);
 
-    var dbo = db.db("marvelclient");
+    // var dbo = db.db("marvelclient");
+      var dbo = db.db(dbName);
 
     console.log('making request');
 

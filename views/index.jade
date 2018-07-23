@@ -96,6 +96,9 @@ block content
 					this.setState({allChars: this.state.allChars.concat([r.data.data.results[0]]), currentChar: r.data.data.results[0], currentIndex: this.state.allChars.length+1});
 					console.log(this.state.currentChar);
 					console.log(this.state.allChars);
+
+					//window.history.pushState({},"", "/character/" + r.data.data.results[0].id);
+					window.history.replaceState({},"", "/character/" + r.data.data.results[0].id);
 				});
 			}
 
@@ -108,6 +111,8 @@ block content
 				console.log(event);
 				this.getRandomChar();
 				event.preventDefault();
+
+ 
 			}
 
 			previous(event){
